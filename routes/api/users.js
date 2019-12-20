@@ -46,7 +46,7 @@ router.post(
       if (user) {
         return res
           .status(400)
-          .json({ errors: [{ msg: "User Already Exists" }] });
+          .json({ errors: [{ msg: "username already in use" }] });
       }
 
       user = await User.findOne({ email });
@@ -54,7 +54,7 @@ router.post(
       if (user) {
         return res
           .status(400)
-          .json({ errors: [{ msg: "email Already Exists" }] });
+          .json({ errors: [{ msg: "email already in use" }] });
       }
 
       user = new User({

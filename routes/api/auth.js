@@ -42,7 +42,7 @@ router.post(
       if (!user) {
         return res
           .status(400)
-          .json({ errors: [{ msg: "User Doesn't Exist" }] });
+          .json({ errors: [{ msg: "User doen't exist" }] });
       }
 
       const isMatch = await bcrypt.compare(password, user.password);
@@ -50,7 +50,7 @@ router.post(
       if (!isMatch) {
         return res
           .status(400)
-          .json({ errors: [{ msg: "Password incorrect" }] });
+          .json({ errors: [{ msg: "Incorrect password" }] });
       }
 
       const payload = {
