@@ -18,6 +18,7 @@ const App = () => (
           <Route exact path = "/register" component={Register} />
           <Route exact path = "/login" component={Login} />
           <Route exact path = "/posts/:urlSlug" component={PostPage} />
+          {/* <Route exact path = "/users/:userName" component={userDashBoard} /> */}
 
         </Switch>
     </Fragment>
