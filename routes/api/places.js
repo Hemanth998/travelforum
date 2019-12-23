@@ -1,26 +1,20 @@
 const express = require("express");
 const slugify = require("slugify");
 const router = express.Router();
-
 const Place = require("../../models/Place");
-
 const adminAuth = require("../../middleware/adminAuth");
-
 const { check, validationResult } = require("express-validator");
-
 
 //get all places test route
 
 router.get("/", async (req, res) => {
-
-    try {
-        const places = await Place.find().sort({ date: -1 });
-        res.json(places);
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send("Internal Server error");
-    }
-
+  try {
+    const places = await Place.find().sort({ date: -1 });
+    res.json(places);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Internal Server error");
+  }
 });
 
 //Insert New PLace
@@ -52,16 +46,14 @@ router.post(
       const isExist = await Place.findOne({ urlSlug });
 
       if (isExist) {
-        return res
-          .status(400)
-          .json({
-            errors: [
-              {
-                msg:
-                  "url slug must be unique, Similar place already exists, try changing few characters in the place name"
-              }
-            ]
-          });
+        return res.status(400).json({
+          errors: [
+            {
+              msg:
+                "url slug must be unique, Similar place already exists, try changing few characters in the place name"
+            }
+          ]
+        });
       }
 
       const newPlace = new Place({
@@ -71,7 +63,7 @@ router.post(
       });
 
       await newPlace.save();
-      res.status(200).json({msg : "Place Added"});
+      res.status(200).json({ msg: "Place Added" });
     } catch (err) {
       console.error(err.message);
       res.status(500).send("Internal Server error");

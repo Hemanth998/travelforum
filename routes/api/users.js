@@ -21,7 +21,9 @@ router.post(
       .isEmpty(),
     check("userName", "user Name is required")
       .not()
-      .isEmpty(),
+      .isEmpty()
+      .custom(value => !/\s/.test(value))
+      .withMessage('No spaces are allowed in the username'),
     check("email", "Please enter a valid email Address").isEmail(),
     check("password", "pass min 8 char").isLength({ min: 8 })
   ],

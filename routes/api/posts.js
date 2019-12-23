@@ -1,9 +1,7 @@
 const express = require("express");
 const slugify = require("slugify");
-
 const { check, validationResult } = require("express-validator");
 const router = express.Router();
-
 const auth = require("../../middleware/auth");
 const Post = require("../../models/Post");
 const User = require("../../models/User");
@@ -20,6 +18,24 @@ router.get("/", async (req, res) => {
       .sort({ date: -1 });
 
     res.json(posts);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Internal Server error");
+  }
+});
+
+
+//Get Post By ID
+
+router.get("/:urlSlug", async (req, res) => {
+  try {
+    const post = await Post.findOne({urlSlug : req.params.urlSlug})
+      .populate("user", ["userName"])
+      .populate("likes.user", ["userName"])
+      .populate("comments.user", ["userName"])
+      .populate("places.place", ["placeName", "urlSlug"])
+
+    res.json(post);
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Internal Server error");
@@ -58,16 +74,14 @@ router.post(
       const isExist = await Post.findOne({ urlSlug });
 
       if (isExist) {
-        return res
-          .status(400)
-          .json({
-            errors: [
-              {
-                msg:
-                  "Hii!!, A post with similar or same title already exists, theres no unique slug for the title, try changing few characters for the title for now, we are working to generate unique slugs for each post, Thanks!!"
-              }
-            ]
-          });
+        return res.status(400).json({
+          errors: [
+            {
+              msg:
+                "Hii!!, A post with similar or same title already exists, theres no unique slug for the title, try changing few characters for the title for now, we are working to generate unique slugs for each post, Thanks!!"
+            }
+          ]
+        });
       }
 
       const newPost = new Post({
@@ -96,11 +110,9 @@ router.put("/:id", auth, async (req, res) => {
       return res.status(404).json({ msg: "Post Not Found!!" });
     }
     if (post.user.toString() !== req.user.id) {
-      return res
-        .status(401)
-        .json({
-          msg: "You are not authorized to edit,Only who posted can edit!!"
-        });
+      return res.status(401).json({
+        msg: "You are not authorized to edit,Only who posted can edit!!"
+      });
     }
 
     const { title, content, places } = req.body;
@@ -134,11 +146,9 @@ router.delete("/:id", auth, async (req, res) => {
     }
 
     if (post.user.toString() !== req.user.id) {
-      return res
-        .status(401)
-        .json({
-          msg: "You are not authorized to delete,Only who posted can delete!!"
-        });
+      return res.status(401).json({
+        msg: "You are not authorized to delete,Only who posted can delete!!"
+      });
     }
 
     await post.remove();
