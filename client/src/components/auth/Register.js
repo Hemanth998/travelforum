@@ -57,11 +57,15 @@ class Register extends Component {
           })
       }
 
-      alert('Registration Successful');
+      else{
+        alert('Registration Successful');
 
-      window.location.href = "/login";
+        window.location.href = "/login";
+  
+        console.log(res);
+      }
 
-      console.log(res);
+     
       //display success message
     } catch (err) {
       console.log(err.response.data);
