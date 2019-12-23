@@ -1,25 +1,23 @@
-import React, { Component } from 'react'
-import {Link} from 'react-router-dom';
+import React, { Component } from "react";
+import { Link} from "react-router-dom";
 import axios from "axios";
 class Login extends Component {
-
   state = {
-    email : '',
-    password : '',
+    email: "",
+    password: "",
     errors: []
-  }
+  };
 
- onChange = e => {
-   this.setState({
-        [e.target.name] : e.target.value
-   })
- }
-     
+  onChange = e => {
+    this.setState({
+      [e.target.name]: e.target.value
+    });
+  };
 
- onSubmit = async e => {
+  onSubmit = async e => {
     e.preventDefault();
 
-    const {email,password} = this.state
+    const { email, password } = this.state;
 
     const user = {
       email,
@@ -37,72 +35,74 @@ class Login extends Component {
 
       const res = await axios.post("/api/auth", body, config);
 
-      alert('Login Successful');
-
+      console.log(res);
       this.setState({
-        errors : []
-    })
-
+        errors: []
+      });
 
       console.log(res);
+
+      await localStorage.setItem('token',res.data.token);
       //display success message
+
+      //redirect
+      window.location.href = '/';
     } catch (err) {
       console.log(err.response.data);
       //display error messages
       this.setState({
-        errors : err.response.data.errors
-    })
+        errors: err.response.data.errors
+      });
     }
-  }
+  };
 
   render() {
-
-    
-    const errors = this.state.errors.map(err => {
+    const errors = this.state.errors.map((err,index) => {
       return (
-      <p>
-          <span className="red">{err.msg}</span><br/>
-      </p>
-      
-      )
-  })
+        <p key={index}>
+          <span className="red">{err.msg}</span>
+          <br />
+        </p>
+      );
+    });
 
     return (
       <div className="container">
-      <h1>Login</h1>
-      {errors}
-      <div className="col-md-4">
-        <form onSubmit={e => this.onSubmit(e)}>
-          <div className="form-group">
-            <label htmlFor="emailField">Email</label>
-            <input
-              type="text"
-              name="email"
-              id="emailField"
-              value={this.state.email}
-              onChange={e => this.onChange(e)}
-              className="form-control"
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="passwordField">Password</label>
-            <input
-              type="password"
-              name="password"
-              id="passwordField"
-              value={this.state.password}
-              onChange={e => this.onChange(e)}
-              className="form-control"
-            />
-          </div>
-          <input type="submit" className="btn btn-primary" value="Login" />
-        </form>
-        <p>Not A User ? <Link to="/register">Sign-Up</Link> for free</p>
+        <h1>Login</h1>
+        {errors}
+        <div className="col-md-4">
+          <form onSubmit={e => this.onSubmit(e)}>
+            <div className="form-group">
+              <label htmlFor="emailField">Email</label>
+              <input
+                type="text"
+                name="email"
+                id="emailField"
+                value={this.state.email}
+                onChange={e => this.onChange(e)}
+                className="form-control"
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="passwordField">Password</label>
+              <input
+                type="password"
+                name="password"
+                id="passwordField"
+                value={this.state.password}
+                onChange={e => this.onChange(e)}
+                className="form-control"
+              />
+            </div>
+            <input type="submit" className="btn btn-primary" value="Login" />
+          </form>
+          <p>
+            Not A User ? <Link to="/register">Sign-Up</Link> for free
+          </p>
+        </div>
       </div>
-    </div>
-    )
+    );
   }
 }
 
 export default Login;
-
