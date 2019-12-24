@@ -6,8 +6,11 @@ import Posts from './components/entities/Posts';
 import PostPage from './components/entities/PostPage';
 import Register from './components/auth/Register';
 import Login from './components/auth/Login';
+import UserDashBoard from './components/entities/UserDashBoard';
+import AddNewPost from './components/entities/AddNewPost';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
+
 const App = () => (
   <Router>
     <Fragment>
@@ -18,7 +21,8 @@ const App = () => (
           <Route exact path = "/register" component={Register} />
           <Route exact path = "/login" component={Login} />
           <Route exact path = "/posts/:urlSlug" component={PostPage} />
-          {/* <Route exact path = "/users/:userName" component={userDashBoard} /> */}
+          <Route exact path = "/users/:userName" component={UserDashBoard} />
+          <Route exact path = "/add-new-post" component={AddNewPost} />
 
         </Switch>
     </Fragment>

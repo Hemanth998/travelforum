@@ -31,7 +31,7 @@ class PostPage extends Component {
       comments = post.comments.map(comment => {
         return (
           <p key={comment._id}>
-            <Link to={`/users/${comment.user._id}`}>
+            <Link to={`/users/${comment.user.userName}`}>
               {comment.user.userName}
             </Link>{" "}
             {comment.text}
@@ -46,7 +46,7 @@ class PostPage extends Component {
         <p>{post.content}</p>
 
         <p>
-          Posted By<Link to={`/user/${user._id}`}> {user.userName}</Link>
+          Posted By<Link to={`/users/${user.userName}`}> {user.userName}</Link>
         </p>
 
         <div>

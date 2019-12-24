@@ -1,23 +1,48 @@
-import React, { Component } from 'react'
+import React, { Component } from "react";
+import axios from "axios";
 
- class Landing extends Component {
-     state = {
-         user : localStorage.getItem('token')
-     }
-    render() {
+class Landing extends Component {
+  state = {
+    token: localStorage.getItem("token"),
+    user: {}
+  };
 
-        let msg = 'You are Logged Out'
-        if(this.state.user){
-            msg = 'You are Logged IN'
+  componentDidMount = async () => {
+    const { token } = this.state;
+
+    if (token) {
+      const config = {
+        headers: {
+          "x-auth-token": token
         }
-        return (
-            <div className="container">
-                {msg}
+      };
 
-                <h1>Landing</h1>
-                
-            </div>
-        )
+      const res = await axios.get("/api/auth", config);
+
+      this.setState({
+        user: res.data
+      });
     }
+  };
+  render() {
+
+    const { token, user} = this.state
+    let msg = "You are Logged Out";
+    if (token) {
+      msg = (
+          <p>
+              Welcome {user.firstName} {user.lastName}
+          </p>
+          )
+
+    }
+    return (
+      <div className="container">
+        {msg}
+
+        <h1>Landing</h1>
+      </div>
+    );
+  }
 }
-export default Landing
+export default Landing;
