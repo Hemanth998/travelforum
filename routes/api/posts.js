@@ -13,7 +13,6 @@ router.get("/", async (req, res) => {
     const posts = await Post.find()
       .populate("user", ["userName"])
       .populate("likes.user", ["userName"])
-      .populate("comments.user", ["userName"])
       .populate("places.place", ["placeName", "urlSlug"])
       .sort({ date: -1 });
 
@@ -32,7 +31,6 @@ router.get("/:urlSlug", async (req, res) => {
     const post = await Post.findOne({urlSlug : req.params.urlSlug})
       .populate("user", ["userName"])
       .populate("likes.user", ["userName"])
-      .populate("comments.user", ["userName"])
       .populate("places.place", ["placeName", "urlSlug"])
 
     res.json(post);
@@ -86,6 +84,7 @@ router.post(
 
       const newPost = new Post({
         user: req.user.id,
+        userName : user.userName,
         title,
         urlSlug,
         content,
@@ -241,7 +240,11 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
+
+
     try {
+      const user = await User.findById(req.user.id).select("-password");
+
       const post = await Post.findById(req.params.id);
 
       if (!post) {
@@ -250,6 +253,7 @@ router.post(
 
       const newComment = {
         user: req.user.id,
+        userName : user.userName,
         text: req.body.text
       };
 

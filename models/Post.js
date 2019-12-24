@@ -25,6 +25,9 @@ const PostSchema = new Schema({
       user: {
         type: Schema.Types.ObjectId,
         ref: "user"
+      },
+      userName : {
+        type : String,
       }
     }
   ],
@@ -33,6 +36,9 @@ const PostSchema = new Schema({
       user: {
         type: Schema.Types.ObjectId,
         ref: "user"
+      },
+      userName : {
+        type : String
       },
       text: {
         type: String,

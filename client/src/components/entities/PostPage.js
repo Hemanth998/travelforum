@@ -4,8 +4,13 @@ import axios from "axios";
 
 class PostPage extends Component {
   state = {
+    token: null,
     post: {},
-    user: {}
+    postedUser: {},
+    loggedUser: {},
+    commentText: '',
+    comments : [],
+    places : []
   };
 
   componentWillMount = async () => {
@@ -13,45 +18,133 @@ class PostPage extends Component {
 
     const response = await axios.get(`/api/posts/${urlSlug}`);
     const post = response.data;
-
-    const user = post.user;
+    const postedUser = post.user;
+    const comments = post.comments;
+    const places = post.places;
 
     this.setState({
       post: post,
-      user: user
+      places,
+      postedUser,
+      comments,
+      token: localStorage.getItem("token")
     });
   };
 
-  render() {
-    const { post } = this.state;
-    const { user } = this.state;
+  onChange = e => {
+    this.setState({
+      [e.target.name]: e.target.value
+    });
+  };
+  addComment = async e => {
+    const postID = this.state.post._id
+    const token = this.state.token;
+    const newComment = {
+      text: this.state.commentText
+    };
 
-    let comments;
-    if (post.comments) {
-      comments = post.comments.map(comment => {
+    const config = {
+      headers : {
+        "x-auth-token" : token,
+        "Content-Type" : "application/json"
+      }
+    }
+
+    const body = JSON.stringify(newComment);
+  
+
+    try {
+      const res = await axios.post(`/api/posts/comment/${postID}`,body,config);
+      console.log(res.data)
+      this.setState({
+        comments : res.data,
+        commentText : ''
+      })
+    } catch (err) {
+      alert('exter text');
+    }  
+
+  };
+
+  render() {
+    const { post, postedUser,comments,token,places } = this.state;
+
+    let commentsList;
+    if (comments) {
+      commentsList = comments.map(comment => {
         return (
           <p key={comment._id}>
-            <Link to={`/users/${comment.user.userName}`}>
-              {comment.user.userName}
-            </Link>{" "}
+            <Link to={`/users/${comment.userName}`}>
+              {comment.userName}
+            </Link>
+            {" "}
             {comment.text}
           </p>
         );
       });
     }
 
-    return (
-      <div>
-        <h1>{post.title}</h1>
-        <p>{post.content}</p>
+    let addComments = "";
 
+    if (token) {
+      addComments = (
+        <div className="form-group">
+          <label htmlFor="commentTextField">Post A Comment</label>
+          <textarea
+            name="commentText"
+            id="commentTextField"
+            value={this.state.commentText}
+            onChange={e => this.onChange(e)}
+            className="form-control"
+          />
+          <button
+            type="button"
+            onClick={e => this.addComment(e)}
+            className="btn btn-primary"
+          >
+            Post
+          </button>
+        </div>
+      );
+    } else {
+      addComments = <Link to="/login">Login to Comment</Link>;
+    }
+
+
+    let placesTagged = '';
+
+    if(places) {
+      placesTagged = places.map(place => {
+          return (
+            <div key={place.place._id}>
+               <Link to={`/places/${place.place.urlSlug}`}>
+            {" "}
+            {place.place.placeName}
+          </Link>
+
+            </div>
+          )
+      }) 
+    }
+
+    return (
+      <div className="container">
+        <h1>{post.title}</h1>
         <p>
-          Posted By<Link to={`/users/${user.userName}`}> {user.userName}</Link>
+          Posted By
+          <Link to={`/users/${postedUser.userName}`}>
+            {" "}
+            {postedUser.userName}
+          </Link>
         </p>
+        <p>{post.content}</p>
 
         <div>
           <h3>Comments</h3>
-          {comments}
+          {commentsList}
+          {addComments}
+          <h2>Places Tagged</h2>
+          {placesTagged}
         </div>
       </div>
     );
