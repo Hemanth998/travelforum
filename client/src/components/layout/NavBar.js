@@ -11,7 +11,9 @@ class NavBar extends Component {
 
 	  this.setState({
 		  token : null
-	  })
+    })
+    
+    window.location.href = "/";
 
 	  
   }
@@ -31,7 +33,7 @@ class NavBar extends Component {
       );
       logout = (
         <li className="nav-item active">
-          <a href="/" className="nav-link" onClick = {e => this.logoutAction(e)}>
+          <a href="#!" className="nav-link" onClick = {e => this.logoutAction(e)}>
             Logout
           </a>
         </li>

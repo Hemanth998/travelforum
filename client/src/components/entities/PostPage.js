@@ -8,9 +8,10 @@ class PostPage extends Component {
     post: {},
     postedUser: {},
     loggedUser: {},
-    commentText: '',
-    comments : [],
-    places : []
+    commentText: "",
+    comments: [],
+    places: [],
+    errors : []
   };
 
   componentWillMount = async () => {
@@ -21,13 +22,30 @@ class PostPage extends Component {
     const postedUser = post.user;
     const comments = post.comments;
     const places = post.places;
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      let config = {
+        headers: {
+          "x-auth-token": token
+        }
+      };
+
+      const res = await axios.get("/api/auth", config);
+
+      const user = res.data;
+
+      this.setState({
+        loggedUser: user
+      });
+    }
 
     this.setState({
       post: post,
       places,
       postedUser,
       comments,
-      token: localStorage.getItem("token")
+      token
     });
   };
 
@@ -37,48 +55,115 @@ class PostPage extends Component {
     });
   };
   addComment = async e => {
-    const postID = this.state.post._id
+    const postID = this.state.post._id;
     const token = this.state.token;
     const newComment = {
       text: this.state.commentText
     };
 
     const config = {
+      headers: {
+        "x-auth-token": token,
+        "Content-Type": "application/json"
+      }
+    };
+
+    const body = JSON.stringify(newComment);
+
+    try {
+      const res = await axios.post(
+        `/api/posts/comment/${postID}`,
+        body,
+        config
+      );
+      console.log(res.data);
+      this.setState({
+        comments: res.data,
+        commentText: ""
+      });
+    } catch (err) {
+      alert("exter text");
+    }
+  };
+
+
+  deleteComment = async (e,id) => {
+
+    const postID = this.state.post._id;
+    const commentID = id;
+
+    //delete Comment API
+
+    const config = {
       headers : {
-        "x-auth-token" : token,
-        "Content-Type" : "application/json"
+        "x-auth-token" : this.state.token
       }
     }
 
-    const body = JSON.stringify(newComment);
-  
+    try {
+      const res = await axios.delete(`/api/posts/comment/${postID}/${commentID}`,config);
+      alert('Comment Deleted');
+      this.setState({
+        comments: res.data
+      });
+    } catch (err) {
+      this.setState({
+        errors: err.response.data.errors
+      });
+    }
+  }
+
+
+  editPost = async (e,id) => {
+      window.location.href = `/edit-post/${id}`;
+  }
+
+  deletePost = async (e,id) => {
+
+    const config = {
+      headers : {
+        "x-auth-token" : this.state.token
+      }
+    }
 
     try {
-      const res = await axios.post(`/api/posts/comment/${postID}`,body,config);
-      console.log(res.data)
-      this.setState({
-        comments : res.data,
-        commentText : ''
-      })
-    } catch (err) {
-      alert('exter text');
-    }  
 
-  };
+    axios.delete(`/api/posts/${id}`,config);
+      window.location.href = "/latest";
+      
+    } catch (err) {
+      this.setState({
+        errors: err.response.data.errors
+      });
+    }
+}
 
   render() {
-    const { post, postedUser,comments,token,places } = this.state;
+    const {
+      post,
+      loggedUser,
+      postedUser,
+      comments,
+      token,
+      places
+    } = this.state;
 
     let commentsList;
-    if (comments) {
+    if (comments) {      
       commentsList = comments.map(comment => {
+
+        let deleteButton = "";
+        if(loggedUser._id === comment.user){
+          deleteButton = (
+            <button type="button" onClick={e => this.deleteComment(e,comment._id)} className="btn btn-danger">Delete</button>
+          )
+        }
+        
         return (
           <p key={comment._id}>
-            <Link to={`/users/${comment.userName}`}>
-              {comment.userName}
-            </Link>
-            {" "}
+            <Link to={`/users/${comment.userName}`}>{comment.userName}</Link>{" "}
             {comment.text}
+            {deleteButton}
           </p>
         );
       });
@@ -110,35 +195,65 @@ class PostPage extends Component {
       addComments = <Link to="/login">Login to Comment</Link>;
     }
 
+    let placesTagged = "";
 
-    let placesTagged = '';
-
-    if(places) {
+    if (places) {
       placesTagged = places.map(place => {
-          return (
-            <div key={place.place._id}>
-               <Link to={`/places/${place.place.urlSlug}`}>
-            {" "}
-            {place.place.placeName}
-          </Link>
-
-            </div>
-          )
-      }) 
+        return (
+          <div key={place.place._id}>
+            <Link to={`/places/${place.place.urlSlug}`}>
+              {" "}
+              {place.place.placeName}
+            </Link>
+          </div>
+        );
+      });
     }
+
+    let editButton = "";
+    let deleteButton = "";
+
+    if (token) {
+      if (loggedUser._id === postedUser._id) {
+        editButton = (
+          <button type="button" className="btn btn-primary" onClick={e=>this.editPost(e,post._id)}>Edit</button>
+        );
+
+        deleteButton = (
+          <button type="button" className="btn btn-danger" onClick={e=>this.deletePost(e,post._id)}>Delete</button>
+        );
+
+      }
+    }
+
+
+    const errors = this.state.errors.map((err, index) => {
+      return (
+        <p key={index}>
+          <span className="red">{err.msg}</span>
+          <br />
+        </p>
+      );
+    });
 
     return (
       <div className="container">
-        <h1>{post.title}</h1>
-        <p>
-          Posted By
-          <Link to={`/users/${postedUser.userName}`}>
-            {" "}
-            {postedUser.userName}
-          </Link>
-        </p>
-        <p>{post.content}</p>
-
+        <div className="col-md-8">
+          <h1>{post.title}</h1>
+          {errors}
+          <p>
+            Posted By
+            <Link to={`/users/${postedUser.userName}`}>
+              {" "}
+              {postedUser.userName}
+            </Link>
+          </p>
+          <p>{post.content}</p>
+        </div>
+        <div className="col-md-3">
+          {editButton}
+          {deleteButton}
+        </div>
         <div>
           <h3>Comments</h3>
           {commentsList}

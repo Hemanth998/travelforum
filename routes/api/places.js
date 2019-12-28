@@ -66,9 +66,24 @@ router.post(
       res.status(200).json({ msg: "Place Added" });
     } catch (err) {
       console.error(err.message);
-      res.status(500).send("Internal Server error");
+      
     }
   }
 );
+
+
+
+//get place details by placeSlug
+router.get(`/getPlaceDetailsBySlug/:placeSlug`, async (req,res) => {
+  try {
+    const { placeSlug } = req.params;
+    const place = await Place.findOne({urlSlug : placeSlug});
+    res.json(place)
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json("internal server error")
+  }
+
+})
 
 module.exports = router;

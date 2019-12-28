@@ -26,6 +26,23 @@ router.get("/", async (req, res) => {
 
 //Get Post By ID
 
+router.get("/getPostById/:postID", async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.postID)
+      .populate("user", ["userName"])
+      .populate("likes.user", ["userName"])
+      .populate("places.place", ["placeName", "urlSlug"])
+
+    res.json(post);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Internal Server error");
+  }
+});
+
+
+//get post by slug
+
 router.get("/:urlSlug", async (req, res) => {
   try {
     const post = await Post.findOne({urlSlug : req.params.urlSlug})
@@ -40,6 +57,7 @@ router.get("/:urlSlug", async (req, res) => {
   }
 });
 
+
 //Insert New Post route
 router.post(
   "/",
@@ -50,6 +68,9 @@ router.post(
         .not()
         .isEmpty(),
       check("content", "COntent cannot be empty")
+        .not()
+        .isEmpty(),
+      check("places","please select atlease one place")
         .not()
         .isEmpty()
     ]
@@ -122,7 +143,7 @@ router.put("/:id", auth, async (req, res) => {
     if (content) updateFields.content = content;
     if (places) updateFields.places = places;
 
-    await post.update(updateFields);
+    await post.updateOne(updateFields);
 
     res.status(200).json({ msg: "Post Changes Saved!!!" });
   } catch (err) {
@@ -362,5 +383,34 @@ router.put(
     }
   }
 );
+
+//get posts by userID
+
+router.get('/getPostsByUser/:userID', async (req,res) => {
+  try {
+
+    const posts = await Post.find({ user : req.params.userID}).sort({date : -1});
+    res.send(posts);
+    
+  } catch (err) {
+    res.status(500).send("Internal Server error");
+  }
+})
+
+//get Posts by placeID
+
+router.get('/getPostsByPlace/:placeID', async (req,res) => {
+  try {
+
+    const posts = await Post.find( ( { places : { $elemMatch : { place : req.params.placeID }}})).sort({date : -1});
+    res.send(posts);
+    
+  } catch (err) {
+    res.status(500).send("Internal Server error");
+  }
+})
+
+
+
 
 module.exports = router;

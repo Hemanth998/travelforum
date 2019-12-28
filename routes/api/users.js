@@ -97,4 +97,18 @@ router.post(
   }
 );
 
+
+
+router.get("/getDetailsByUserName/:userName", async (req, res) => {
+  try {
+    const { userName } = req.params;
+
+    const user = await User.findOne({ userName }).select("-password");
+
+    res.json(user);
+  } catch (err) {
+    res.status(400).json(err.msg);
+  }
+});
+
 module.exports = router;

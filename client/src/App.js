@@ -7,7 +7,9 @@ import PostPage from './components/entities/PostPage';
 import Register from './components/auth/Register';
 import Login from './components/auth/Login';
 import UserDashBoard from './components/entities/UserDashBoard';
+import PlaceDashBoard from './components/entities/PlaceDashBoard';
 import AddNewPost from './components/entities/AddNewPost';
+import editPost from './components/entities/editPost';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
@@ -23,6 +25,8 @@ const App = () => (
           <Route exact path = "/posts/:urlSlug" component={PostPage} />
           <Route exact path = "/users/:userName" component={UserDashBoard} />
           <Route exact path = "/add-new-post" component={AddNewPost} />
+          <Route exact path = "/places/:placeSlug" component={PlaceDashBoard} />
+          <Route exact path = "/edit-post/:postID" component={editPost} />
 
         </Switch>
     </Fragment>
