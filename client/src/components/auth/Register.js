@@ -47,7 +47,7 @@ class Register extends Component {
 
       const body = JSON.stringify(newUser);
 
-      const res = await axios.post("/api/users", body, config);
+     
 
       if(password1 !== password){
           this.setState({
@@ -58,6 +58,8 @@ class Register extends Component {
       }
 
       else{
+        const res = await axios.post("/api/users", body, config);
+        
         alert('Registration Successful');
 
         window.location.href = "/login";
