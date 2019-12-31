@@ -33,6 +33,7 @@ class Landing extends Component {
           <p>
               Welcome {user.firstName} {user.lastName}
           </p>
+
           )
 
     }
@@ -41,6 +42,7 @@ class Landing extends Component {
         {msg}
 
         <h1>Landing</h1>
+        <p className="lead">A Place where travel enthusiasts share travel experiences, learn and explore about new places</p>
       </div>
     );
   }
