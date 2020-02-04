@@ -6,18 +6,33 @@ class NavBar extends Component {
     token: localStorage.getItem("token")
   };
 
-  logoutAction = async e => {
-	await localStorage.clear();
-
-	  this.setState({
-		  token : null
-    })
-    
-    window.location.href = "/";
-
-	  
+  constructor(props) {
+    super(props);
+    this.toggleNavbar = this.toggleNavbar.bind(this);
+    this.state = {
+      collapsed: true
+    };
   }
+  toggleNavbar() {
+    this.setState({
+      collapsed: !this.state.collapsed
+    });
+  }
+
+  logoutAction = async e => {
+    await localStorage.clear();
+
+    this.setState({
+      token: null
+    });
+
+    window.location.href = "/";
+  };
   render() {
+
+    const collapsed = this.state.collapsed;
+    const classOne = collapsed ? 'collapse navbar-collapse' : 'collapse navbar-collapse show';
+    const classTwo = collapsed ? 'navbar-toggler navbar-toggler-right collapsed' : 'navbar-toggler navbar-toggler-right';
     let newpost = "";
     let register = "";
     let login = "";
@@ -33,7 +48,7 @@ class NavBar extends Component {
       );
       logout = (
         <li className="nav-item active">
-          <a href="#!" className="nav-link" onClick = {e => this.logoutAction(e)}>
+          <a href="#!" className="nav-link" onClick={e => this.logoutAction(e)}>
             Logout
           </a>
         </li>
@@ -49,7 +64,7 @@ class NavBar extends Component {
 
       login = (
         <li className="nav-item">
-          <a href="/login" className="nav-link" >
+          <a href="/login" className="nav-link">
             Login
           </a>
         </li>
@@ -62,10 +77,10 @@ class NavBar extends Component {
             <a href="/" className="navbar-brand">
               travelforum
             </a>
-            <button className="navbar-toggler" type="button">
+            <button onClick={this.toggleNavbar} className={`${classTwo}`} type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
               <span className="navbar-toggler-icon"></span>
             </button>
-            <div className="collapse navbar-collapse">
+            <div className={`${classOne}`} id="navbarResponsive">
               <ul className="navbar-nav ml-auto">
                 <li className="nav-item active">
                   <Link to="/latest" className="nav-link">
