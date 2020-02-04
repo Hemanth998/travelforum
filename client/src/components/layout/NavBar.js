@@ -2,15 +2,16 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 
 class NavBar extends Component {
-  state = {
-    token: localStorage.getItem("token")
-  };
+  // state = {
+  //   token: localStorage.getItem("token")
+  // };
 
   constructor(props) {
     super(props);
     this.toggleNavbar = this.toggleNavbar.bind(this);
     this.state = {
-      collapsed: true
+      collapsed: true,
+      token : localStorage.getItem("token")
     };
   }
   toggleNavbar() {
