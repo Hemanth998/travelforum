@@ -2,9 +2,6 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 
 class NavBar extends Component {
-  // state = {
-  //   token: localStorage.getItem("token")
-  // };
 
   constructor(props) {
     super(props);
@@ -75,12 +72,13 @@ class NavBar extends Component {
       <div>
         <nav className="navbar navbar-expand-md bg-light navbar-light sticky-top">
           <div className="container">
+          <button onClick={this.toggleNavbar} className={`${classTwo}`} type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+              <span className="navbar-toggler-icon"></span>
+            </button>
             <a href="/" className="navbar-brand">
               travelforum
             </a>
-            <button onClick={this.toggleNavbar} className={`${classTwo}`} type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-              <span className="navbar-toggler-icon"></span>
-            </button>
+
             <div className={`${classOne}`} id="navbarResponsive">
               <ul className="navbar-nav ml-auto">
                 <li className="nav-item active">
